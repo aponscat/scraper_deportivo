@@ -1,6 +1,17 @@
 <?php
-// Definir la clave de API y URL base de TheSportsDB
+
+require_once 'vendor/autoload.php';
+
+use NklKst\TheSportsDb\Client\ClientFactory;
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 $apiKey = "3";
+if (isset($_ENV['API_KEY'])) {
+    echo "Using .env API_KEY\n";
+    $apiKey=$_ENV['API_KEY'];
+}
 $apiBase = "https://www.thesportsdb.com/api/v1/json/$apiKey/";
 
 // Función auxiliar para obtener JSON de la API y decodificarlo
@@ -29,6 +40,7 @@ if (!$sportsData || !isset($sportsData['sports'])) {
     die("Error: No se pudo obtener la lista de deportes.\n");
 }
 echo "DONE! ".count($sportsData)." records found\n";
+//die(print_r($sportsData, true));
 
 // 2. Obtener la lista de todos los países disponibles
 echo "Getting all countries\n";
@@ -55,6 +67,7 @@ if (empty($countryList)) {
 foreach ($sportsData['sports'] as $sport) {
     $sportName = $sport['strSport'] ?? null;
     if (!$sportName) continue;
+    if ($sportName=='Soccer') continue;
 
     // Crear directorio para el deporte si no existe
     if (!is_dir($sportName)) {
