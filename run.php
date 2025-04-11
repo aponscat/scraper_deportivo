@@ -64,7 +64,7 @@ if ($countriesData && isset($countriesData['countries'])) {
 }
 // Asegurar que tenemos una lista de países para iterar
 if (empty($countryList)) {
-    $sporcountryListtsData=json_decode(file_get_contents('countries.json'), true);
+    $countryList=json_decode(file_get_contents('countries.json'), true);
     if (!$countryList) die("Error: No se pudo obtener la lista de países.\n");
 }
 echo "DONE! ".count($countryList)." records found\n";
