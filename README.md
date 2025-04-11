@@ -10,7 +10,7 @@ Filter by sport and/or country
 
 ```sh
 php run.php all "canada"
-php run.php basketball all
+php run.php basketball
 php run.php "ice hockey" "canada"
 ```
 

@@ -38,8 +38,10 @@ function fetchJson($url) {
 // 1. Obtener la lista de todos los deportes disponibles
 echo "Getting all sports\n";
 $sportsData = fetchJson($apiBase . "all_sports.php");
+//die(print_r($sportsData,true));
 if (!$sportsData || !isset($sportsData['sports'])) {
-    die("Error: No se pudo obtener la lista de deportes.\n");
+    $sportsData=json_decode(file_get_contents('sports.json'), true);
+    if (!$sportsData) die("Error: No se pudo obtener la lista de deportes.\n");
 }
 echo "DONE! ".count($sportsData)." records found\n";
 $jsonContent = json_encode($sportsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
@@ -60,14 +62,16 @@ if ($countriesData && isset($countriesData['countries'])) {
         }
     }
 }
+// Asegurar que tenemos una lista de países para iterar
+if (empty($countryList)) {
+    $sporcountryListtsData=json_decode(file_get_contents('countries.json'), true);
+    if (!$countryList) die("Error: No se pudo obtener la lista de países.\n");
+}
 echo "DONE! ".count($countryList)." records found\n";
 $jsonContent = json_encode($countryList, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 file_put_contents('countries.json', $jsonContent);
 
-// Asegurar que tenemos una lista de países para iterar
-if (empty($countryList)) {
-    die("Error: No se pudo obtener la lista de países.\n");
-}
+
 
 if ($sportParam!='all') {
     echo "Filtering sport=$sportParam\n";
