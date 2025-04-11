@@ -2,8 +2,10 @@
 
 require_once 'vendor/autoload.php';
 
-use NklKst\TheSportsDb\Client\ClientFactory;
 use Dotenv\Dotenv;
+
+$sportParam = $argv[1] ?? 'all'; // Si no existe el primer parámetro, se asigna 'all'
+$countryParam = $argv[2] ?? 'all'; // Si no existe el segundo parámetro, se asigna 'all'
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
@@ -40,7 +42,7 @@ if (!$sportsData || !isset($sportsData['sports'])) {
     die("Error: No se pudo obtener la lista de deportes.\n");
 }
 echo "DONE! ".count($sportsData)." records found\n";
-//die(print_r($sportsData, true));
+//die(print_r($sportsData['sports'], true));
 
 // 2. Obtener la lista de todos los países disponibles
 echo "Getting all countries\n";
@@ -63,11 +65,39 @@ if (empty($countryList)) {
     die("Error: No se pudo obtener la lista de países.\n");
 }
 
+if ($sportParam!='all') {
+    echo "Filtering sport=$sportParam\n";
+    $found=false;
+    foreach ($sportsData['sports'] as $sport) {
+        $sportName = $sport['strSport'] ?? null;
+        if (strtolower($sportName)==strtolower($sportParam)) {
+            $found=true;
+            break;
+        }
+    }
+    if (!$found) die("Sport not found $sportParam\n");
+}
+
+if ($countryParam!='all') {
+    echo "Filtering country=$countryParam\n";
+    $found=false;
+    foreach ($countryList as $country) {
+        if (strtolower($country)==strtolower($countryParam)) {
+            $found=true;
+            break;
+        }
+    }
+    if (!$found) die("Country not found $countryParam\n");
+}
+sleep(3);
+
 // Recorrer cada deporte
 foreach ($sportsData['sports'] as $sport) {
     $sportName = $sport['strSport'] ?? null;
     if (!$sportName) continue;
-    if ($sportName=='Soccer') continue;
+    //if ($sportName=='Soccer') continue;
+    //if ($sportName!='Basketball') continue;
+    if ($sportParam!='all' && strtolower($sportName)!=strtolower($sportParam)) continue;
 
     // Crear directorio para el deporte si no existe
     if (!is_dir($sportName)) {
@@ -76,6 +106,9 @@ foreach ($sportsData['sports'] as $sport) {
 
     // 2. Para cada deporte, iterar por los países para encontrar ligas de ese deporte
     foreach ($countryList as $countryName) {
+        //if ($countryName!='Spain') continue;
+        if ($countryParam!='all' && strtolower($countryName)!=strtolower($countryParam)) continue;
+
         echo "Processing sport $sportName and country $countryName\n";
         // URL para buscar todas las ligas en un país dado para el deporte actual
         $leaguesUrl = $apiBase . "search_all_leagues.php?c=" . urlencode($countryName) . "&s=" . urlencode($sportName);
