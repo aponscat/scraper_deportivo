@@ -42,6 +42,8 @@ if (!$sportsData || !isset($sportsData['sports'])) {
     die("Error: No se pudo obtener la lista de deportes.\n");
 }
 echo "DONE! ".count($sportsData)." records found\n";
+$jsonContent = json_encode($sportsData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+file_put_contents('sports.json', $jsonContent);
 //die(print_r($sportsData['sports'], true));
 
 // 2. Obtener la lista de todos los países disponibles
@@ -59,6 +61,8 @@ if ($countriesData && isset($countriesData['countries'])) {
     }
 }
 echo "DONE! ".count($countryList)." records found\n";
+$jsonContent = json_encode($countryList, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+file_put_contents('countries.json', $jsonContent);
 
 // Asegurar que tenemos una lista de países para iterar
 if (empty($countryList)) {
